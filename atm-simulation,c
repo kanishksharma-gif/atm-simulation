@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_TRANSACTIONS 5 // because wrong entering of user PIN Number
+
+typedef struct // Using this for storing the number of transactions made by the user
+{
+    float transactions[MAX_TRANSACTIONS];
+    int count;
+} MiniStatement; // for storing the bank statement of the user
+
+int verifyPIN(int enteredPIN) // verification of PIN Number entered by the user
+{
+    const int PIN = 1234;
+    return enteredPIN == PIN;
+}
+
+void recordTransaction(MiniStatement *ms, float amount)
+{
+    if (ms->count < MAX_TRANSACTIONS)
+        ms->transactions[ms->count++] = amount;
+    else
+    {
+        for (int i = 1; i < MAX_TRANSACTIONS; i++)
+            ms->transactions[i - 1] = ms->transactions[i];
+        ms->transactions[MAX_TRANSACTIONS - 1] = amount;
+    }
+}
+
+void showMiniStatement(MiniStatement ms)
+{
+    printf("Last %d transactions:\n", ms.count);
+    for (int i = 0; i < ms.count; i++)
+    {
+        printf("%.2f\n", ms.transactions[i]);
+    }
+}
+
+void withdraw(float *balance, float amount, MiniStatement *ms)
+{
+    if (amount <= 0)
+    {
+        printf("Invalid withdrawal amount!\n");
+    }
+    else if (amount > *balance)
+    {
+        printf("Insufficient balance!\n");
+    }
+    else
+    {
+        *balance -= amount;
+        recordTransaction(ms, -amount);
+        printf("Withdrawal successful! \n Remaining balance: %.2f\n", *balance);
+    }
+}
+
+void deposit(float *balance, float amount, MiniStatement *ms)
+{
+    if (amount <= 0)
+    {
+        printf("Invalid deposit amount!\n");
+    }
+    else
+    {
+        *balance += amount;
+        recordTransaction(ms, amount);
+        printf("Deposit successful! New balance: %.2f\n", *balance);
+    }
+}
+int main()
+{
+    int enteredPIN, choice,c=1;
+    float balance = 5000, amount;
+    MiniStatement ms = {{0}, 0};
+
+    printf("Enter your ATM PIN: ");
+    scanf("%d", &enteredPIN);
+
+    if (verifyPIN(enteredPIN))
+    {
+        printf("PIN Correct. Access Granted!\n");
+    }
+    else
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            printf("Enter the correct PIN Number \n Attempts Remaining %d ", (3 - i));
+            c++;
+            scanf("%d", &enteredPIN);
+        }
+        if(c==3)
+        {
+            printf("Maximum Attempts reached, Access Denied ");
+            exit(0);
+        }
+    }
+
+    while (1)
+    {
+        printf("\n===== Welcome to State Bank Of India ATM =====\n");
+        printf("1. Check Balance\n");
+        printf("2. Cash Deposit\n");
+        printf("3. Cash Withdrawal\n");
+        printf("4. Mini Statement\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+         case 1:
+            printf("Current Balance: %.2f\n", balance);
+            break;
+         case 2:
+            printf("Enter deposit amount: ");
+            scanf("%f", &amount);
+            deposit(&balance, amount, &ms);
+            break;
+         case 3:
+            printf("Enter withdrawal amount: ");
+            scanf("%f", &amount);
+            withdraw(&balance, amount, &ms);
+            break;
+         case 4:
+            showMiniStatement(ms);
+            break;
+         case 5:
+            printf("Thank you for visiting our SBI ATM \n");
+            exit(0);
+            break;
+         default:
+            printf("Invalid choice! Please try again.\n");
+            break;
+        } // End of switch(ch)
+    } // End of while(1)
+    return 0;
+} // End of main
