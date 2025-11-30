@@ -1,2 +1,2 @@
 # atm-simulation
-my code for ATM Simulation
+Code for ATM Simulation
