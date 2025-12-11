@@ -89,6 +89,7 @@ int main()
             if (verifyPIN(enteredPIN))
             {
               printf("PIN Correct. Access Granted!\n");
+              break;
             }
         }
         if(c==3)
